@@ -3,7 +3,18 @@ var angleTarget = 0;
 var lerping = false;
 function onEvent(e) if (e.event.name == "[BCC] Angle Tween") {
 	var params = e.event.params;
-	var timero = Conductor.stepCrochet * params[1] / 1000;
+
+	var timeroPre = Std.string(params[1]).split(":"); //string parsing for backwards compatibility
+	if (timeroPre.length < 1 || timeroPre.length > 3) {
+		trace("Invalid time setting!");  //if someone messes up
+		return;
+	}
+	var timero = switch (timeroPre.length) { //set the length of the tween
+		case 1: (Conductor.stepCrochet*0.001)*timeroPre[0];
+		case 2: (Conductor.crochet*0.001)*timeroPre[0] + (Conductor.stepCrochet*0.001)*timeroPre[1];
+		case 3: (Conductor.crochet*0.004)*timeroPre[0] + (Conductor.crochet*0.001)*timeroPre[1] + (Conductor.stepCrochet*0.001)*timeroPre[2];
+	}
+
 	angleTarget = params[0];
 	var angleEase = CoolUtil.flxeaseFromString(params[2], params[3]);
 
@@ -26,9 +37,9 @@ ________PACKSEP________{
 			"defaultValue": "0"
 		},
 		{
-			"name": "Tween Time (Steps)",
-			"type": "Float(0.0625,256,0.01,2)",
-			"defaultValue": 1.00
+			"name": "Tween Time (M:B:S, B:S or S)",
+			"type": "String",
+			"defaultValue": "1:0"
 		},
 		{
 			"name": "Tween Ease (ex: circ, quad, cube)",

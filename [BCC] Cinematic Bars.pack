@@ -14,24 +14,37 @@ var lerpTarget = 0;
 var lerpSpeed = 0.05;
 var lerping = false;
 function onEvent(e) if (e.event.name == "[BCC] Cinematic Bars") {
+	var params = e.event.params;
 	for (bar in cinemaBars)	{
 		FlxTween.cancelTweensOf(bar); //dont let two tweens happen at the same time
-		var overHUD = e.event.params[4];
+		var overHUD = params[4];
 		members.remove(bar); //because remove by itself wasnt working
 		if (overHUD) add(bar);
 		else insert(0,bar);
 	}
-	lerping = e.event.params[2] == "lerp";
-	switch (e.event.params[2]) {
+	lerping = params[2] == "lerp";
+
+	var timeroPre = Std.string(params[1]).split(":"); //string parsing for backwards compatibility
+	if (timeroPre.length < 1 || timeroPre.length > 3) {
+		trace("Invalid time setting!");  //if someone messes up
+		return;
+	}
+	var timero = switch (timeroPre.length) { //set the length of the tween
+		case 1: (Conductor.stepCrochet*0.001)*timeroPre[0];
+		case 2: (Conductor.crochet*0.001)*timeroPre[0] + (Conductor.stepCrochet*0.001)*timeroPre[1];
+		case 3: (Conductor.crochet*0.004)*timeroPre[0] + (Conductor.crochet*0.001)*timeroPre[1] + (Conductor.stepCrochet*0.001)*timeroPre[2];
+	}
+
+	switch (params[2]) {
 		case "none (happens instantly)": //instant snap to the pixel height
-			topCinematic.y = e.event.params[0]-FlxG.height;
-			bottomCinematic.y = FlxG.height-e.event.params[0];
+			topCinematic.y = params[0]-FlxG.height;
+			bottomCinematic.y = FlxG.height-params[0];
 		case "lerp":
-			lerpTarget = e.event.params[0];
-			lerpSpeed = e.event.params[5];
+			lerpTarget = params[0];
+			lerpSpeed = params[5];
 		default:
-			var barEase = CoolUtil.flxeaseFromString(e.event.params[2],e.event.params[3]);
-			for (s => bar in cinemaBars) FlxTween.tween(bar,{y:[e.event.params[0]-FlxG.height,FlxG.height-e.event.params[0]][s]},(Conductor.stepCrochet*e.event.params[1])/1000,{ease:barEase});
+			var barEase = CoolUtil.flxeaseFromString(params[2],params[3]);
+			for (s => bar in cinemaBars) FlxTween.tween(bar,{y:[params[0]-FlxG.height,FlxG.height-params[0]][s]},timero,{ease:barEase});
 	}
 }
 
@@ -44,9 +57,9 @@ ________PACKSEP________{
 			"defaultValue": 120
 		},
 		{
-			"name": "Tween Time (Steps)",
-			"type": "Float(0.0625,256,0.01,2)",
-			"defaultValue": 4.00
+			"name": "Tween Time (M:B:S, B:S or S)",
+			"type": "String",
+			"defaultValue": "1:0"
 		},
 		{
 			"name": "Tween Ease",
