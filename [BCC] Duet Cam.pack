@@ -1,4 +1,13 @@
 [BCC] Duet Cam.hx________PACKSEP________//character duets with no extra strums
+function postCreate() {
+	for (e in PlayState.SONG.events) {
+		if (e.time > 10) break;
+		if (e.name == "[BCC] Duet Cam") {
+			executeEvent(e);
+			break;
+		}
+	}
+}
 function onEvent(e) if (e.event.name == "[BCC] Duet Cam") {
 	var params = e.event.params;
 	var strums = params[0];
