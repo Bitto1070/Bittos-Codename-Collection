@@ -1,0 +1,70 @@
+[BCC] Duet Cam.hx________PACKSEP________//character duets with no extra strums
+function onEvent(e) if (e.event.name == "[BCC] Duet Cam") {
+	var params = e.event.params;
+	var strums = params[0];
+	if (strums.indexOf(",") != -1) strums = strums.split(","); //check before splitting to prevent a null error
+	else strums = [strums]; //single-strum support, for duets that only partially use a strum's characters
+
+	var charsChosen = params[1];
+	charsChosen = StringTools.replace(charsChosen," ","");
+	if (charsChosen != "") {
+		if (charsChosen.indexOf("|") != -1) charsChosen = charsChosen.split("|");
+		if (charsChosen.indexOf(",") != -1) charsChosen = charsChosen.split(",");
+	}
+
+	var charArray = [];
+	for (s => strum in strumLines.members) {
+		if (!strums.contains(s)) continue;
+		for (c => char in strum.characters) {
+			if (charsChosen != "" && !charsChosen.contains(c)) continue; //skip if characters is not empty and doesn't contain the char id
+			charArray.push(char);
+		}
+	}
+
+	var offset = params[2];
+	if (offset.indexOf(",") != -1) offset = offset.split(",");
+	var camOffset = FlxPoint.get(offset[0] ?? 0,offset[1] ?? 0);
+
+	var camData = getCharactersCamPos(charArray,camOffset);
+	trace(strums,charsChosen,charArray.length,camData.amount,camData.pos,camOffset);
+	if (camData.amount > 0) executeEvent({name:"Camera Position",params:[camData.pos.x,camData.pos.y,params[3],params[4],params[5],params[6],false]});
+}
+________PACKSEP________{
+	"params": [
+		{
+			"name": "Strums (IDs split by ,)",
+			"type": "String",
+			"defaultValue": "0,1"
+		},
+		{
+			"name": "Characters (strums split by | IDs split by ,) (Leave empty for all chars from chosen strums)",
+			"type": "String",
+			"defaultValue": ""
+		},
+		{
+			"name": "Offset (X,Y)",
+			"type": "String",
+			"defaultValue": "0,0"
+		},
+		{
+			"name": "Tween Movement?",
+			"type": "Bool",
+			"defaultValue": true
+		},
+		{
+			"name": "Tween Time (Steps, IF NOT CLASSIC)",
+			"type": "Float(0.25, 9999, 0.25, 2)",
+			"defaultValue": 4
+		},
+		{
+			"name": "Tween Ease (ex: circ, quad, cube)",
+			"type": "DropDown('CLASSIC', 'linear', 'back', 'bounce', 'circ', 'cube', 'elastic', 'expo', 'quad', 'quart', 'quint', 'sine', 'smoothStep', 'smootherStep')",
+			"defaultValue": "CLASSIC"
+		},
+		{
+			"name": "Tween Type (excluded if CLASSIC or linear, ex: InOut)",
+			"type": "DropDown('In', 'Out', 'InOut')",
+			"defaultValue": "In"
+		}
+	]
+}________PACKSEP________
