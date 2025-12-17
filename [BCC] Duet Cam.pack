@@ -26,7 +26,7 @@ function onEvent(e) if (e.event.name == "[BCC] Duet Cam") {
 	var camOffset = FlxPoint.get(offset[0] ?? 0,offset[1] ?? 0);
 
 	var camData = getCharactersCamPos(charArray,camOffset);
-	trace(strums,charsChosen,charArray.length,camData.amount,camData.pos,camOffset);
+	//trace(strums,charsChosen,charArray.length,camData.amount,camData.pos,camOffset);
 	if (camData.amount > 0) executeEvent({name:"Camera Position",params:[camData.pos.x,camData.pos.y,params[3],params[4],params[5],params[6],false]});
 }
 ________PACKSEP________{
