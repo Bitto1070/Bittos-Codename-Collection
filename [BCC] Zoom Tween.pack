@@ -1,12 +1,11 @@
-[BCC] Zoom Tween.hx________PACKSEP________//v2 (better time control)
-var defaultZoom:Float;
-function postCreate() defaultZoom = stage.stageXML?.get("zoom") ?? 1; //for resetting
+[BCC] Zoom Tween.hx________PACKSEP________//hotfix to the zoom failsafe
+var defaultZoom = stage.stageXML?.get("zoom") ?? 1;
 
 function onEvent(e) if (e.event.name == "[BCC] Zoom Tween") {
 	var params = e.event.params;
 	var timeroPre = Std.string(params[1]).split(":"); //string parsing for backwards compatibility
 	if (timeroPre.length < 1 || timeroPre.length > 3) {
-		trace("Invalid time setting!");  //if someone messes up
+		trace("Invalid time setting!"); //if someone messes up
 		return;
 	}
 	var timero = switch (timeroPre.length) { //set the length of the tween
