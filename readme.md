@@ -10,7 +10,7 @@ Right now, this contains 5 main events:
 - **Duet Cam** Allows you to move the camera between two strums, and even pick which characters in those strums are accounted.
 
 And a bonus one:
-- **get snappy**: Multiplicative camera speed controller. Lets you make it instant, too.
+- **lerp mult**: Multiplicative camera speed controller. Both multiplicative and direct (0-1) modes are available.
 
 ## How to download
 To get every event, use the **"Download Zip"** in the **"Code"** dropdown (the big green button). This also downloads the old versions though, so you'd have to delete that folder.

@@ -1,55 +1,83 @@
-[BCC] Angle Tween.hx________PACKSEP________//addon for Bitto zoom event
+[BCC] Angle Tween.hx________PACKSEP________//turnies
 var angleTarget = 0;
 var lerping = false;
 function onEvent(e) if (e.event.name == "[BCC] Angle Tween") {
 	var params = e.event.params;
 
-	var timeroPre = Std.string(params[1]).split(":"); //string parsing for backwards compatibility
+	var timeroPre = Std.string(params[1]).split(":");
 	if (timeroPre.length < 1 || timeroPre.length > 3) {
-		trace("Invalid time setting!");  //if someone messes up
+		trace("Invalid time setting!"); //if someone messes up
 		return;
 	}
-	var timero = switch (timeroPre.length) { //set the length of the tween
-		case 1: (Conductor.stepCrochet*0.001)*timeroPre[0];
-		case 2: (Conductor.crochet*0.001)*timeroPre[0] + (Conductor.stepCrochet*0.001)*timeroPre[1];
-		case 3: (Conductor.crochet*0.004)*timeroPre[0] + (Conductor.crochet*0.001)*timeroPre[1] + (Conductor.stepCrochet*0.001)*timeroPre[2];
+
+	var beat = Conductor.crochet * 0.001;
+	var step = beat * 0.25;
+	var one = timeroPre[0];
+	var two = timeroPre[1];
+	var timero = switch (timeroPre.length) {
+		case 1: step * one;
+		case 2: beat * one + step * two;
+		case 3: beat*4 * one + beat * two + step * timeroPre[2];
 	}
 
 	angleTarget = params[0];
-	var angleEase = CoolUtil.flxeaseFromString(params[2], params[3]);
+	var ease = params[2];
+	var angleEase = CoolUtil.flxeaseFromString(ease, params[3]);
 
-	lerping = params[2] == "lerp";
+	lerping = (ease == "lerp");
 	FlxTween.cancelTweensOf(FlxG.camera, ["angle"]);
-
 	//trace(timero,angleTarget,angleEase);
-	switch (params[2]) {
-		case "none (happens instantly)": FlxG.camera.angle = angleTarget;
-		case "lerp": //nothing
+	if (lerping) return;
+	switch (ease) {
+		case "none (instant)","none (happens instantly)": FlxG.camera.angle = angleTarget;
 		default: FlxTween.angle(FlxG.camera,FlxG.camera.angle,angleTarget,timero,{ease:angleEase, onUpdate: (a) -> FlxG.camera.angle = a.angle});
 	}
 }
-function update() if (lerping) FlxG.camera.angle = FlxMath.lerp(FlxG.camera.angle, angleTarget, camGameZoomLerp);
+function update() if (lerping && FlxG.camera.angle != angleTarget) FlxG.camera.angle = FlxMath.lerp(FlxG.camera.angle, angleTarget, camGameZoomLerp);
 ________PACKSEP________{
 	"params": [
 		{
 			"name": "Angle Target",
 			"type": "Float(-360,360,0.01,2)",
 			"defaultValue": "0"
-		},
-		{
+		},{
 			"name": "Tween Time (M:B:S, B:S or S)",
 			"type": "String",
 			"defaultValue": "1:0"
-		},
-		{
+		},{
 			"name": "Tween Ease (ex: circ, quad, cube)",
-			"type": "DropDown('none (happens instantly)','lerp','linear', 'back', 'bounce', 'circ', 'cube', 'elastic', 'expo', 'quad', 'quart', 'quint', 'sine', 'smoothStep', 'smootherStep')",
-			"defValue": "linear"
-		},
-		{
+			"type": "DropDown('none (instant)','lerp','linear', 'back', 'bounce', 'circ', 'cube', 'elastic', 'expo', 'quad', 'quart', 'quint', 'sine', 'smoothStep', 'smootherStep')",
+			"defaultValue": "lerp"
+		},{
 			"name": "Tween Type (ex: InOut)",
 			"type": "DropDown('In', 'Out', 'InOut')",
-			"defValue": "In"
+			"defaultValue": "Out"
 		}
 	]
 }________PACKSEP________iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAG5JREFUOI21k0sKwCAMRCfFQzj3P1y8hV30g7RqEsG3EYLOR1FwUbGGCICqqkunSeKwNlhMBTwMBUjCU21PAq/7ngQR92GCTCI7nhAAUs+9NELFSDO9g6JqJnkFot0ffhW6fOatUeoNI8i9Ln/nE9D0ItGm1WszAAAAAElFTkSuQmCC
+________PACKSEP________
+function generateIcon() {
+	var params = event.params;
+	if (params == null || inMenu) return;
+
+	var timeroPre = Std.string(params[1]).split(":");
+	var len = timeroPre.length;
+
+	if (len < 1 || len > 3) return;
+
+	var m = Std.parseFloat(timeroPre[0]);
+	var b = (len > 1) ? Std.parseFloat(timeroPre[1]) : 0;
+	var s = (len > 2) ? Std.parseFloat(timeroPre[2]) : 0;
+
+	var stepDuration = switch len {
+		case 1: m;
+		case 2: 4*m + b;
+		case 3: 16*m + 4*b + s;
+	}
+
+	var group = new EventIconGroup();
+	if (stepDuration > 0 && params[2] != 'lerp' && params[2] != 'none (instant)' && params[2] != 'none (happens instantly)' && !inMenu) generateEventIconDurationArrow(group, stepDuration);
+	group.add(generateDefaultIcon(event.name));
+	generateEventIconNumbers(group,params[0],5,16);
+	return group;
+}

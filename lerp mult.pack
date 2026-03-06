@@ -18,3 +18,13 @@ ________PACKSEP________{
 		}
 	]
 }________PACKSEP________iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAKhJREFUOI2lk0EOwjAMBMdRDqgf4zNUfQsSN17Cx6LezKGtY4IDreqjvbtZx7aoqtKEiLQpAAIoOSJqCfm17oSyL/aI5qA47CqS9pIBuLxMaHOTdtBqzFcTMeeAtq/L8P0PvVzoQMtS/Jc73kIQCeAxnRSIIppKlDvdQlZVm+nt3ge2U5Bh2cjcp1TgTwesu+0PyDuJ+t5ex99CKxLF+KzYDwdehIPn/Abrgki3fxHQOQAAAABJRU5ErkJggg==
+________PACKSEP________
+function generateIcon() {
+	var params = event.params;
+	if (params == null || inMenu) return;
+
+	var group = new EventIconGroup();
+	group.add(generateDefaultIcon(event.name));
+	generateEventIconNumbers(group,params[0],5,16);
+	return group;
+}

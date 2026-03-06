@@ -1,13 +1,18 @@
-[BCC] Cinematic Bars.hx________PACKSEP________//she cinema my bars til i Bitto my Event Pak
-public var topCinematic = new FunkinSprite(0, -FlxG.height).makeSolid(FlxG.width*2, FlxG.height, 0xFF000000);
-public var bottomCinematic = new FunkinSprite(0, FlxG.height).makeSolid(FlxG.width*2, FlxG.height, 0xFF000000);
+[BCC] Cinematic Bars.hx________PACKSEP________//cinemies
+var barMult = 1.10001;
+public var topCinematic = new FunkinSprite(0, 0).makeSolid(FlxG.width*2, FlxG.height*barMult, 0xFF000000);
+public var bottomCinematic = new FunkinSprite(0, 0).makeSolid(FlxG.width*2, FlxG.height*barMult, 0xFF000000);
 
 var cinemaBars = [];
-function postCreate() for (bar in [topCinematic,bottomCinematic]) {
-	bar.camera = camHUD;
-	bar.screenCenter(0x01);
-	insert(0,bar);
-	cinemaBars.push(bar);
+function postCreate() {
+	for (bar in [topCinematic,bottomCinematic]) {
+		bar.camera = camHUD;
+		bar.screenCenter(0x01);
+		insert(0,bar);
+		cinemaBars.push(bar);
+	}
+	topCinematic.y = -topCinematic.height;
+	bottomCinematic.y = camHUD.height;
 }
 
 var lerpTarget = 0;
@@ -15,71 +20,112 @@ var lerpSpeed = 0.05;
 var lerping = false;
 function onEvent(e) if (e.event.name == "[BCC] Cinematic Bars") {
 	var params = e.event.params;
-	for (bar in cinemaBars)	{
-		FlxTween.cancelTweensOf(bar); //dont let two tweens happen at the same time
-		var overHUD = params[4];
-		members.remove(bar); //because remove by itself wasnt working
+	var overHUD = params[4];
+	for (bar in cinemaBars) {
+		FlxTween.cancelTweensOf(bar);
+		remove(bar,true);
 		if (overHUD) add(bar);
 		else insert(0,bar);
 	}
-	lerping = params[2] == "lerp";
+	var ease = params[2];
+	lerping = ease == "lerp";
 
-	var timeroPre = Std.string(params[1]).split(":"); //string parsing for backwards compatibility
+	var timeroPre = Std.string(params[1]).split(":");
 	if (timeroPre.length < 1 || timeroPre.length > 3) {
-		trace("Invalid time setting!");  //if someone messes up
+		trace("Invalid time setting!"); //if someone messes up
 		return;
 	}
-	var timero = switch (timeroPre.length) { //set the length of the tween
-		case 1: (Conductor.stepCrochet*0.001)*timeroPre[0];
-		case 2: (Conductor.crochet*0.001)*timeroPre[0] + (Conductor.stepCrochet*0.001)*timeroPre[1];
-		case 3: (Conductor.crochet*0.004)*timeroPre[0] + (Conductor.crochet*0.001)*timeroPre[1] + (Conductor.stepCrochet*0.001)*timeroPre[2];
+
+	var beat = Conductor.crochet * 0.001;
+	var step = beat * 0.25;
+	var timero = switch (timeroPre.length) {
+		case 1: step * timeroPre[0];
+		case 2: beat * timeroPre[0] + step * timeroPre[1];
+		case 3: beat*4 * timeroPre[0] + beat * timeroPre[1] + step * timeroPre[2];
 	}
 
-	switch (params[2]) {
-		case "none (happens instantly)": //instant snap to the pixel height
-			topCinematic.y = params[0]-FlxG.height;
-			bottomCinematic.y = FlxG.height-params[0];
+	var height = params[0];
+	var offset = params[6] ?? 0;
+	topTarget = height - topCinematic.height + offset;
+	bottomTarget = FlxG.height - height + offset;
+
+	switch (ease) {
+		case "none (instant)","none (happens instantly)":
+			topCinematic.y = topTarget;
+			bottomCinematic.y = bottomTarget;
 		case "lerp":
-			lerpTarget = params[0];
+			lerpTarget = height;
 			lerpSpeed = params[5];
 		default:
-			var barEase = CoolUtil.flxeaseFromString(params[2],params[3]);
-			for (s => bar in cinemaBars) FlxTween.tween(bar,{y:[params[0]-FlxG.height,FlxG.height-params[0]][s]},timero,{ease:barEase});
+			var barEase = CoolUtil.flxeaseFromString(ease,params[3]);
+			FlxTween.tween(topCinematic,{y:topTarget},timero,{ease:barEase});
+			FlxTween.tween(bottomCinematic,{y:bottomTarget},timero,{ease:barEase});
 	}
 }
 
-function update() if (lerping) for (s => bar in cinemaBars) bar.y = lerp(bar.y,[lerpTarget-FlxG.height,FlxG.height-lerpTarget][s],lerpSpeed);
+var topTarget = 0;
+var bottomTarget = 0;
+function update() if (lerping && (topCinematic.y != topTarget && bottomCinematic.y != bottomTarget)) {
+	topCinematic.y = lerp(topCinematic.y,topTarget,lerpSpeed);
+	bottomCinematic.y = lerp(bottomCinematic.y,bottomTarget,lerpSpeed);
+}
 ________PACKSEP________{
 	"params": [
 		{
 			"name": "Height Target (pixels, 0 to 361 (off to blocks entire screen)",
 			"type": "Float(0, 361, 0.01, 2)",
 			"defaultValue": 120
-		},
-		{
+		},{
 			"name": "Tween Time (M:B:S, B:S or S)",
 			"type": "String",
 			"defaultValue": "1:0"
-		},
-		{
+		},{
 			"name": "Tween Ease",
-			"type": "DropDown('none (happens instantly)','linear', 'lerp', 'back', 'bounce', 'circ', 'cube', 'elastic', 'expo', 'quad', 'quart', 'quint', 'sine', 'smoothStep', 'smootherStep')",
-			"defValue": "circ"
-		},
-		{
+			"type": "DropDown('none (instant)','linear', 'lerp', 'back', 'bounce', 'circ', 'cube', 'elastic', 'expo', 'quad', 'quart', 'quint', 'sine', 'smoothStep', 'smootherStep')",
+			"defaultValue": "circ"
+		},{
 			"name": "Tween Type",
 			"type": "DropDown('In', 'Out', 'InOut')",
-			"defValue": "In"
-		},
-		{
+			"defaultValue": "Out"
+		},{
 			"name": "Go over HUD",
 			"type": "Bool",
 			"defaultValue": false
-		},
-		{
+		},{
 			"name": "(for 'lerp' ease) lerp speed",
 			"type": "String",
 			"defaultValue": "0.05"
+		},{
+			"name": "Y offset",
+			"type": "Float(-720, 720, 0.01, 2)",
+			"defaultValue": 0
 		}
 	]
 }________PACKSEP________iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAGlJREFUOI3tU0EKwCAMi+Ij2v8/Lv6iO1lKV8aGO+ywgIgp0SbFBsCwgb4j/sYFYwUwSSdF1c+i6nzFwQAjaU/3td7JILZcIdYnCVF1Gz2SUXCFSbqmtJC7yQ+cLOxg4EYGEXms7f8LOAC3H1lkFwdKegAAAABJRU5ErkJggg==
+________PACKSEP________
+function generateIcon() {
+	var params = event.params;
+	if (params == null || inMenu) return;
+
+	var timeroPre = Std.string(params[1]).split(":");
+	var len = timeroPre.length;
+
+	if (len < 1 || len > 3) return;
+
+	var m = Std.parseFloat(timeroPre[0]);
+	var b = (len > 1) ? Std.parseFloat(timeroPre[1]) : 0;
+	var s = (len > 2) ? Std.parseFloat(timeroPre[2]) : 0;
+
+	var stepDuration = switch len {
+		case 1: m;
+		case 2: 4*m + b;
+		case 3: 16*m + 4*b + s;
+	}
+
+	var group = new EventIconGroup();
+	var ease = params[2];
+	if (stepDuration > 0 && ease != 'lerp' && ease != 'none (instant)' && ease != 'none (happens instantly)' && !inMenu) generateEventIconDurationArrow(group, stepDuration);
+	group.add(generateDefaultIcon(event.name));
+	generateEventIconNumbers(group,params[0],5,16);
+	return group;
+}
