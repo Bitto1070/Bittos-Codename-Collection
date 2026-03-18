@@ -1,0 +1,25 @@
+import openfl.display.BitmapData;
+var miniArrow = "iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAADlJREFUGJV9j0EOADAIwsr+/2d2WRZ1ZCSeqILQ5TNXi0BUSHPDxQAkwI0oUopI0Dfi6ejwyTzQzA3Tqg/9QXpWLwAAAABJRU5ErkJggg==";
+function generateIcon() {
+	var params = event.params;
+	if (inMenu || params == null) return;
+
+	var group = new EventIconGroup();
+	var icon = getIconFromStrumline(params[2]);
+	if (icon == null) icon = generateDefaultIcon(event.name);
+	group.add(icon);
+	icon.setPosition(-8,-8);
+
+	var base64bitmapdata = BitmapData.fromBase64(miniArrow, "image/png");
+	var base64sprite = new FunkinSprite(-2,-2,base64bitmapdata);
+	group.add(base64sprite);
+
+	var text = new FunkinText(0,0,FlxG.width,"",8);
+	text.text = (params[0] == params[1]) ? params[0] : params[0] + "\n" + params[1];
+	text.font = null;
+	text.alignment = "center";
+	text.setPosition(icon.x + (icon.width - text.width)*0.5,icon.y + icon.height - 8);
+	group.add(text);
+
+	return group;
+}
