@@ -19,7 +19,7 @@ function generateIcon() {
 		case 3: 16*m + 4*b + s;
 	}
 
-	if (stepDuration > 0 && params[5] != 'CLASSIC' && !params[3] && !inMenu) generateEventIconDurationArrow(group, stepDuration);
+	if (stepDuration > 0 && params[5] != 'CLASSIC' && params[3] && !inMenu) generateEventIconDurationArrow(group, stepDuration);
 
 	//strum adder
 	var strums = params[0];
