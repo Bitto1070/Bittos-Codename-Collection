@@ -1,18 +1,16 @@
-lerp mult.hx________PACKSEP________
-function onEvent(e) if (e.event.name == "lerp mult") {
-	camGame.followLerp = e.event.params[1]
-	? e.event.params[0]
-	: Math.min(1,Flags.DEFAULT_CAMERA_FOLLOW_SPEED * e.event.params[0]);
+Lerp Mult.hx________PACKSEP________
+function onEvent(e) if (e.event.name == "Lerp Mult") {
+	camGame.followLerp = e.event.params[1] ? e.event.params[0] : Math.min(1,Flags.DEFAULT_CAMERA_FOLLOW_SPEED * e.event.params[0]);
 }
 ________PACKSEP________{
 	"params": [
 		{
 			"name": "CamGame Lerp Multiplier",
-			"type": "Float(0, 100, 1, 4)",
+			"type": "Float(0, 25, 1, 4)",
 			"defaultValue": 1
 		},
 		{
-			"name": "absoulute lerp (0-1)",
+			"name": "absolute lerp (0-1)?",
 			"type": "Bool",
 			"defaultValue": false
 		}

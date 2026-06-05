@@ -1,0 +1,53 @@
+Bump Speed Change.hx________PACKSEP________
+function onEvent(e) if (e.event.name == "Bump Speed Change") {
+	var params = e.event.params;
+	var abs = params[3];
+	camZoomLerp = abs ? params[0] : Math.min(1,Flags.DEFAULT_ZOOM_LERP * params[0]);
+	camGameZoomLerp = abs ? params[1] : Math.min(1,Flags.DEFAULT_CAM_ZOOM_LERP * params[1]);
+	camHUDZoomLerp = abs ? params[2] : Math.min(1,Flags.DEFAULT_HUD_ZOOM_LERP * params[2]);
+}
+________PACKSEP________{
+	"params": [
+		{
+			"name": "Bump Speed Multiplier",
+			"type": "Float(0, 20, 0.01, 4)",
+			"defaultValue": "1"
+		},
+		{
+			"name": "CamGame Zoom Speed Multiplier",
+			"type": "Float(0, 20, 0.01, 4)",
+			"defaultValue": "1"
+		},
+		{
+			"name": "CamHUD Zoom Speed Multiplier",
+			"type": "Float(0, 20, 0.01, 4)",
+			"defaultValue": "1"
+		},
+		{
+			"name": "absolute lerp (0-1)?",
+			"type": "Bool",
+			"defaultValue": false
+		}
+	]
+}________PACKSEP________iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAKNJREFUOI2NU1sOwyAMs2nvf4PuppP3QcPIowVLSI2FnZA0bJAw4euijIM+Pt+EJBOnO58ZnSY+6E1IhtoAfDrfoKFBgwbs+07kzwUBULw/hRMZDQqxgZIvtCqd/L89oj00e6uhyaBsHAAJ0PVgEt8EYJzYgwoluyteGyzEpUEfVS2uxph+JOA9c7pvxI44mjRItG20PeijXKxkXKaZWInjOv8Az06+3CygK/AAAAAASUVORK5CYII=
+________PACKSEP________
+function generateIcon() {
+	var params = event.params;
+	if (params == null || inMenu) return;
+
+	var group = new EventIconGroup();
+	var icon = generateDefaultIcon(event.name);
+	group.add(icon);
+
+	if (params[0]) {
+		var itsAbs = new FunkinText(-3,0,icon.width*2,"ABS");
+		itsAbs.size = 10;
+		itsAbs.y = icon.y - itsAbs.height + 1;
+		group.add(itsAbs);
+	}
+
+	generateEventIconNumbers(group,params[1],5,16);
+	generateEventIconNumbers(group,params[2],5,24);
+	generateEventIconNumbers(group,params[3],5,32);
+	return group;
+}
