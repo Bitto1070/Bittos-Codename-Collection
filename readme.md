@@ -16,4 +16,4 @@ And a few extras:
 ## How to download
 To get every event, use the **"Download Zip"** in the **"Code"** dropdown (the big green button).
 You can also get events individually by clicking on them and using the **"Download raw file"** button. More Tedious, but it lets you cherry-pick which events you want.
-You may also get the .ui.hx files, which contain small GUI additions to the charter for each event! These are also packed into the .pack files, but a source code bug prevents them for working. Just know that eventually they will become useless. 
+You may also get the .ui.hx files, which contain small GUI additions to the charter for each event! These are also packed into the .pack files, and are only here for people using versions prior to the fix.
