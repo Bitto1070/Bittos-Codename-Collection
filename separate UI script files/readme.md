@@ -1,0 +1,2 @@
+# Disclaimer
+As stated on the main readme, these are only here for users who are using a version of Codename Engine prior to [the pack ui fix](https://github.com/CodenameCrew/CodenameEngine/commit/8a1c7190fc4c7845af675b38259dd712e39ac067), added August 1st 2026. if you have a version from after this, these will serve no benefit.

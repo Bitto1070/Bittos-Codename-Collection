@@ -14,6 +14,8 @@ And a few extras:
 - **Bump Speed Change**: Same as Lerp Mult, but for zooming and bumping/bopping.
 
 ## How to download
-To get every event, use the **"Download Zip"** in the **"Code"** dropdown (the big green button).
-You can also get events individually by clicking on them and using the **"Download raw file"** button. More Tedious, but it lets you cherry-pick which events you want.
-You may also get the .ui.hx files, which contain small GUI additions to the charter for each event! These are also packed into the .pack files, and are only here for people using versions prior to the fix.
+To get every event, [click here](https://download-directory.github.io/?url=https%3A%2F%2Fgithub.com%2FBitto1070%2FBittos-Codename-Collection%2Ftree%2Fmain%2Fpacks).
+
+You can also get individual events by clicking on them and using the **"Download raw file"** button. It's more tedious, but it lets you cherry-pick which events you want.
+
+You may also get the .ui.hx files by [clicking here](https://download-directory.github.io/?url=https%3A%2F%2Fgithub.com%2FBitto1070%2FBittos-Codename-Collection%2Ftree%2Fmain%2Fseparate%2520UI%2520script%2520files). These are for older versions of Codename Engine which do not have [the pack ui fix](https://github.com/CodenameCrew/CodenameEngine/commit/8a1c7190fc4c7845af675b38259dd712e39ac067). if you have a version from after this commit, you can ignore them entirely.
